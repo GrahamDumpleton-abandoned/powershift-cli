@@ -1,12 +1,28 @@
 import os
+import sys
 import re
 import subprocess
 import webbrowser
+import zipfile
+import tarfile
+import stat
+
+try:
+    from urllib import urlretrieve
+except ImportError:
+    from urllib.request import urlretrieve
 
 import click
 
-ENTRYPOINTS = 'powershift_cli_plugins'
+if sys.platform == 'win32':
+    SAVEDIR='PowerShift'
+else:
+    SAVEDIR='.powershift'
 
+DEFAULT_ROOTDIR = os.path.expanduser(os.path.join('~', SAVEDIR))
+ROOTDIR = os.environ.get('POWERSHIFT_HOME_DIR', DEFAULT_ROOTDIR)
+
+ENTRYPOINTS = 'powershift_cli_plugins'
 
 def server_url():
     # XXX This is only available from Origin 1.4 onwards.
@@ -37,6 +53,14 @@ def root(ctx):
         https://github.com/getwarped/powershift
 
     """
+
+    ctx.obj['ROOTDIR'] = ROOTDIR
+
+    # If running a command from client group, we want to skip checks for
+    # whether we have the 'oc' command as may be wanting to install it.
+
+    if ctx.invoked_subcommand == 'client':
+        return
 
     # Check whether the 'oc' command is installed and fail if not. We
     # are so dependent on it being installed that there isn't much point
@@ -175,6 +199,109 @@ def token(ctx):
     except subprocess.CalledProcessError as e:
         click.echo('Failed: %s' % e.stdout)
         ctx.exit(e.returncode)
+
+@root.group()
+def client():
+    """
+    Install/update oc command line tool.
+
+    """
+
+download_prefix = 'https://github.com/openshift/origin/releases/download'
+
+client_downloads = {
+    'v1.3.2': {
+        'darwin' : 'openshift-origin-client-tools-v1.3.2-ac1d579-mac.zip',
+        'linux' : 'openshift-origin-client-tools-v1.3.2-ac1d579-linux-64bit.tar.gz',
+        'win32' : 'openshift-origin-client-tools-v1.3.2-ac1d579-windows.zip',
+    },
+    'v1.4.0-rc1': {
+        'darwin' : 'openshift-origin-client-tools-v1.4.0-rc1.b4e0954-mac.zip',
+        'linux' : 'openshift-origin-client-tools-v1.4.0-rc1.b4e0954-linux-64bit.tar.gz',
+        'win32' : 'openshift-origin-client-tools-v1.4.0-rc1.b4e0954-windows.zip',
+    }
+}
+
+@client.command()
+@click.pass_context
+def versions(ctx):
+    """
+    List versions of oc that can be installed.
+
+    """
+
+    for version in client_downloads:
+        click.echo(version)
+
+@client.command()
+@click.pass_context
+@click.option('--bindir', default=None,
+    help='Specify directory to install oc binary.')
+@click.argument('version', default='v1.3.2')
+def install(ctx, version, bindir):
+    """
+    Install version of oc command line tool.
+
+    """
+
+    if version not in client_downloads:
+        click.echo('Failed: Version not available for installation.')
+        ctx.exit(1)
+
+    if sys.platform not in client_downloads[version]:
+        click.echo('Failed: Version not available for platform.')
+        ctx.exit(1)
+
+    # Create a directory for holding install oc binary.
+
+    if bindir is None:
+        rootdir = ctx.obj['ROOTDIR']
+        bindir = os.path.join(rootdir, 'tools')
+
+    os.makedirs(bindir, exist_ok=True)
+
+    # Download the package.
+
+    filename = client_downloads[version][sys.platform]
+
+    url = '%s/%s/%s' % (download_prefix, version, filename)
+
+    click.echo('Downloading: %s' % url)
+
+    local_filename, headers = urlretrieve(url)
+
+    try:
+        if filename.endswith('.zip'):
+            with zipfile.ZipFile(local_filename, 'r') as zfp:
+                binary = list(filter(lambda name: name in ['oc', 'oc.exe'],
+                        zfp.namelist()))[0]
+                click.echo('Extracting: %s' % binary)
+                zfp.extract(binary, bindir)
+
+        elif filename.endswith('.tar.gz'):
+            with tarfile.open(local_filename, 'r:gz') as tfp:
+                binary = list(filter(lambda name: name.endswith('/oc'),
+                        tfp.getnames()))[0]
+                click.echo('Extracting: %s' % binary)
+                with tfp.extractfile(binary) as src:
+                    with open(os.path.join(bindir, 'oc'), 'wb') as dst:
+                        dst.write(src.read())
+                binary = os.path.basename(binary)
+
+    finally:
+        try:
+            os.unlink(local_filename)
+        except OSError:
+            pass
+
+    # Make file executable.
+
+    path = os.path.join(bindir, binary)
+
+    info = os.stat(path)
+    os.chmod(path, info.st_mode|stat.S_IXUSR|stat.S_IXGRP|stat.S_IXOTH)
+
+    click.echo('Success: Ensure that %r is in your "PATH".' % bindir)
 
 def main():
     # Import any plugins for extending the available commands. They
