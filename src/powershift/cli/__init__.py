@@ -121,7 +121,7 @@ def bash():
 
     directory = os.path.dirname(__file__)
     script = os.path.join(directory, 'completion-bash.sh')
-    with open(script, encoding='UTF-8') as fp:
+    with open(script) as fp:
         click.echo(fp.read())
 
 def session_context():
@@ -258,7 +258,15 @@ def install(ctx, version, bindir):
         rootdir = ctx.obj['ROOTDIR']
         bindir = os.path.join(rootdir, 'tools')
 
-    os.makedirs(bindir, exist_ok=True)
+    try:
+        os.mkdir(rootdir)
+    except OSError:
+        pass
+
+    try:
+        os.mkdir(bindir)
+    except OSError:
+        pass
 
     # Download the package.
 
@@ -301,7 +309,7 @@ def install(ctx, version, bindir):
     info = os.stat(path)
     os.chmod(path, info.st_mode|stat.S_IXUSR|stat.S_IXGRP|stat.S_IXOTH)
 
-    click.echo('Success: Ensure that %r is in your "PATH".' % bindir)
+    click.echo('Success: Ensure that "%s" is in your "PATH".' % bindir)
 
 def main():
     # Import any plugins for extending the available commands. They
