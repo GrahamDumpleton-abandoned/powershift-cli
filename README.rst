@@ -29,9 +29,11 @@ commands available.
       --help  Show this message and exit.
 
     Commands:
+      client      Install/update oc command line tool.
       completion  Output completion script for specified shell.
       console     Open a browser on the OpenShift web console.
       server      Displays the URL for the OpenShift cluster.
+      session     Display information about current session.
 
 Bash shell completion
 ---------------------
