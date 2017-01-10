@@ -254,8 +254,9 @@ def install(ctx, version, bindir):
 
     # Create a directory for holding install oc binary.
 
+    rootdir = ctx.obj['ROOTDIR']
+
     if bindir is None:
-        rootdir = ctx.obj['ROOTDIR']
         bindir = os.path.join(rootdir, 'tools')
 
     try:
