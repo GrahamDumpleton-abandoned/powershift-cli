@@ -6,6 +6,7 @@ import webbrowser
 import zipfile
 import tarfile
 import stat
+import shutil
 
 try:
     from urllib import urlretrieve
@@ -266,11 +267,18 @@ def install(ctx, version, bindir):
 
     rootdir = ctx.obj['ROOTDIR']
 
+    cachedir = os.path.join(rootdir, 'tools')
+
     if bindir is None:
-        bindir = os.path.join(rootdir, 'tools')
+        bindir = cachedir
 
     try:
         os.mkdir(rootdir)
+    except OSError:
+        pass
+
+    try:
+        os.mkdir(cachedir)
     except OSError:
         pass
 
@@ -281,44 +289,77 @@ def install(ctx, version, bindir):
 
     # Download the package.
 
-    filename = client_downloads[version][sys.platform]
+    if sys.platform == 'win32':
+        target = '%s/oc.exe' % version
+        binary = 'oc.exe'
+    else:
+        target = '%s/oc' % version
+        binary = 'oc'
 
-    url = '%s/%s/%s' % (download_prefix, version, filename)
+    cache_path = os.path.join(cachedir, target)
+    binary_path = os.path.join(bindir, binary)
 
-    click.echo('Downloading: %s' % url)
+    if not os.path.exists(cache_path):
+        filename = client_downloads[version][sys.platform]
 
-    local_filename, headers = urlretrieve(url)
+        url = '%s/%s/%s' % (download_prefix, version, filename)
+
+        click.echo('Downloading: %s' % url)
+
+        local_filename, headers = urlretrieve(url)
+
+        try:
+            if filename.endswith('.zip'):
+                with zipfile.ZipFile(local_filename, 'r') as zfp:
+                    binary_file = binary
+
+                    click.echo('Extracting: %s' % binary_file)
+
+                    zfp.extract(binary_file, os.path.dirname(cache_path))
+
+            elif filename.endswith('.tar.gz'):
+                with tarfile.open(local_filename, 'r:gz') as tfp:
+                    binary_file = list(filter(lambda name: name.endswith(
+                            '/%s' % binary), tfp.getnames()))[0]
+
+                    click.echo('Extracting: %s' % binary_file)
+
+                    src = tfp.extractfile(binary_file)
+
+                    try:
+                        os.mkdir(os.path.dirname(cache_path))
+                    except OSError:
+                        pass
+
+                    try:
+                        with open(cache_path, 'wb') as dst:
+                            dst.write(src.read())
+                    finally:
+                        src.close()
+
+        finally:
+            try:
+                os.unlink(local_filename)
+            except OSError:
+                pass
+
+        # Make file executable.
+
+        info = os.stat(cache_path)
+        mode = info.st_mode|stat.S_IXUSR|stat.S_IXGRP|stat.S_IXOTH
+        os.chmod(cache_path, mode)
+
+    else:
+        click.echo('Using: %s' % cache_path)
+
+    # Link versioned name to unversioned.
 
     try:
-        if filename.endswith('.zip'):
-            with zipfile.ZipFile(local_filename, 'r') as zfp:
-                binary = list(filter(lambda name: name in ['oc', 'oc.exe'],
-                        zfp.namelist()))[0]
-                click.echo('Extracting: %s' % binary)
-                zfp.extract(binary, bindir)
+        os.unlink(binary_path)
+    except OSError:
+        pass
 
-        elif filename.endswith('.tar.gz'):
-            with tarfile.open(local_filename, 'r:gz') as tfp:
-                binary = list(filter(lambda name: name.endswith('/oc'),
-                        tfp.getnames()))[0]
-                click.echo('Extracting: %s' % binary)
-                with tfp.extractfile(binary) as src:
-                    with open(os.path.join(bindir, 'oc'), 'wb') as dst:
-                        dst.write(src.read())
-                binary = os.path.basename(binary)
-
-    finally:
-        try:
-            os.unlink(local_filename)
-        except OSError:
-            pass
-
-    # Make file executable.
-
-    path = os.path.join(bindir, binary)
-
-    info = os.stat(path)
-    os.chmod(path, info.st_mode|stat.S_IXUSR|stat.S_IXGRP|stat.S_IXOTH)
+    shutil.copy(cache_path, binary_path)
 
     click.echo('Success: Ensure that "%s" is in your "PATH".' % bindir)
 
