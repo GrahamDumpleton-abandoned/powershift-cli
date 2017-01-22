@@ -73,6 +73,8 @@ Additional plugins which are installed will be:
   profiles, added security, default persistent volumes, and tools for
   adding additional persistent volumes to the local OpenShift cluster.
 
+.. _`powershift-cluster`: https://github.com/getwarped/powershift-cluster
+
 If you are happy to install this package directly into your main Python
 installation or have an existing Python virtual environment, you can
 instead run::
