@@ -122,8 +122,8 @@ option to specify the directory to install into. For example::
 Command line help
 -----------------
 
-Executing the command with no arguments will provide a list of the base
-commands available.
+Executing the command with no arguments will provide a list of the
+command groups available.
 
 ::
 
@@ -150,8 +150,11 @@ commands available.
       server      Displays the URL for the OpenShift cluster.
       session     Display information about current session.
 
-This only shows command groups included with the base CLI package. When you
+This only shows command groups included with the base package. When you
 install additional plugins, the command groups they add will also be shown.
+
+You can use the ``--help`` option with any command group or specific
+command to get additional details.
 
 Bash shell completion
 ---------------------
