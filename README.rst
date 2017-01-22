@@ -150,6 +150,9 @@ commands available.
       server      Displays the URL for the OpenShift cluster.
       session     Display information about current session.
 
+This only shows command groups included with the base CLI package. When you
+install additional plugins, the command groups they add will also be shown.
+
 Bash shell completion
 ---------------------
 
