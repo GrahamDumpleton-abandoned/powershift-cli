@@ -368,6 +368,39 @@ def install(ctx, version, bindir):
 
     click.echo('Success: Ensure that "%s" is in your "PATH".' % bindir)
 
+@client.command()
+@click.pass_context
+@click.option('--shell', default=None,
+    help='Force environment to be for specific shell.')
+def env(ctx, shell):
+    """
+    Display the commands to set up the environment.
+
+    """
+
+    rootdir = ctx.obj['ROOTDIR']
+    bindir = os.path.join(rootdir, 'tools')
+
+    if shell is None:
+        if sys.platform == 'win32':
+            shell = 'powershell'
+        else:
+            shell = 'sh'
+
+    if shell in ('sh', 'bash'):
+        click.echo('export PATH="$PATH:%s"' % bindir)
+        click.echo('# Run this command to configure your shell:')
+        click.echo('# eval "$(powershift client env %s)"' % shell)
+
+    elif shell == 'powershell':
+        click.echo('$Env:Path += ";%s"' % bindir)
+        click.echo('# Run this command to configure your shell:')
+        click.echo('# powershift client env --shell=powershell | Invoke-Expression')
+
+    elif shell == 'cmd':
+        click.echo('set Path="%%Path%%;%s"' % bindir)
+        click.echo('# Run this command to configure your shell: copy and paste the above values into your command prompt')
+
 def main():
     # Import any plugins for extending the available commands. They
     # should automatically register themselves against the appropriate
