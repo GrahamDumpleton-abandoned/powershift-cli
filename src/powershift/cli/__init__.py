@@ -241,7 +241,7 @@ def versions(ctx):
 
     """
 
-    for version in client_downloads:
+    for version in sorted(client_downloads):
         click.echo(version)
 
 @client.command()
