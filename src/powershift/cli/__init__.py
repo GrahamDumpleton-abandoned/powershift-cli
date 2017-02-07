@@ -264,7 +264,11 @@ def install(ctx, version, bindir):
         click.echo('Failed: Version not available for installation.')
         ctx.exit(1)
 
-    if sys.platform not in client_downloads[version]:
+    platform = sys.platform
+    if platform.startswith('linux'):
+        platform = 'linux'
+
+    if platform not in client_downloads[version]:
         click.echo('Failed: Version not available for platform.')
         ctx.exit(1)
 
