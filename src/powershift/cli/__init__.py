@@ -309,7 +309,7 @@ def install(ctx, version, bindir):
     binary_path = os.path.join(bindir, binary)
 
     if not os.path.exists(cache_path):
-        filename = client_downloads[version][sys.platform]
+        filename = client_downloads[version][platform]
 
         url = '%s/%s/%s' % (download_prefix, version, filename)
 
