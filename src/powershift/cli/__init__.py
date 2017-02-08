@@ -394,7 +394,7 @@ def env(ctx, shell):
     if shell in ('sh', 'bash'):
         click.echo('export PATH="$PATH:%s"' % bindir)
         click.echo('# Run this command to configure your shell:')
-        click.echo('# eval "$(powershift client env %s)"' % shell)
+        click.echo('# eval "$(powershift client env --shell=%s)"' % shell)
 
     elif shell == 'powershell':
         click.echo('$Env:Path += ";%s"' % bindir)
