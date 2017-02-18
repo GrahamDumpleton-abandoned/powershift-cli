@@ -80,8 +80,8 @@ def root(ctx):
                 'line tool installed, but it appears to be non functional.')
         ctx.exit(1)
 
-@root.command()
-def console():
+@root.command('console')
+def command_console():
     """
     Open a browser on the OpenShift web console.
 
@@ -89,8 +89,8 @@ def console():
 
     webbrowser.open(server_url())
 
-@root.command()
-def server():
+@root.command('server')
+def command_server():
     """
     Displays the URL for the OpenShift cluster.
 
@@ -98,8 +98,8 @@ def server():
 
     click.echo(server_url())
 
-@root.group()
-def completion():
+@root.group('completion')
+def group_completion():
     """
     Output completion script for specified shell.
 
@@ -107,8 +107,8 @@ def completion():
 
     pass
 
-@completion.command()
-def bash():
+@group_completion.command('bash')
+def command_completion_bash():
     """
     Output shell completion code for 'bash'.
 
@@ -152,16 +152,16 @@ def session_user():
 
     return token
 
-@root.group()
-def session():
+@root.group('session')
+def group_session():
     """
     Display information about current session.
 
     """
 
-@session.command()
+@group_session.command('user')
 @click.pass_context
-def user(ctx):
+def command_session_user(ctx):
     """
     Displays name of user for active session.
 
@@ -173,9 +173,9 @@ def user(ctx):
         click.echo('Failed: %s' % e.stdout)
         ctx.exit(e.returncode)
 
-@session.command()
+@group_session.command('context')
 @click.pass_context
-def context(ctx):
+def command_session_context(ctx):
     """
     Displays the active user session context.
 
@@ -187,9 +187,9 @@ def context(ctx):
         click.echo('Failed: %s' % e.stdout)
         ctx.exit(e.returncode)
 
-@session.command()
+@group_session.command('token')
 @click.pass_context
-def token(ctx):
+def command_session_token(ctx):
     """
     Displays the active user session token.
 
@@ -201,8 +201,8 @@ def token(ctx):
         click.echo('Failed: %s' % e.stdout)
         ctx.exit(e.returncode)
 
-@root.group()
-def client():
+@root.group('client')
+def group_client():
     """
     Install/update oc command line tool.
 
@@ -238,9 +238,9 @@ client_downloads = {
     }
 }
 
-@client.command()
+@group_client.command('versions')
 @click.pass_context
-def versions(ctx):
+def command_client_versions(ctx):
     """
     List versions of oc that can be installed.
 
@@ -249,12 +249,12 @@ def versions(ctx):
     for version in sorted(client_downloads):
         click.echo(version)
 
-@client.command()
+@group_client.command('install')
 @click.pass_context
 @click.option('--bindir', default=None,
     help='Specify directory to install oc binary.')
 @click.argument('version', default='v1.4.1')
-def install(ctx, version, bindir):
+def command_client_install(ctx, version, bindir):
     """
     Install version of oc command line tool.
 
@@ -372,12 +372,12 @@ def install(ctx, version, bindir):
 
     click.echo('Success: Ensure that "%s" is in your "PATH".' % bindir)
 
-@client.command()
+@group_client.command('env')
 @click.pass_context
 @click.option('--shell', default=None,
     help='Force environment to be for specific shell.')
 @click.argument('version', default='unknown')
-def env(ctx, version, shell):
+def command_client_env(ctx, version, shell):
     """
     Display the commands to set up the environment.
 
