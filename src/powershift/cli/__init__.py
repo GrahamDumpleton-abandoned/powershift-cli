@@ -376,14 +376,21 @@ def install(ctx, version, bindir):
 @click.pass_context
 @click.option('--shell', default=None,
     help='Force environment to be for specific shell.')
-def env(ctx, shell):
+@click.argument('version', default='unknown')
+def env(ctx, version, shell):
     """
     Display the commands to set up the environment.
 
     """
 
+    if version == 'unknown':
+        version = None
+
     rootdir = ctx.obj['ROOTDIR']
     bindir = os.path.join(rootdir, 'tools')
+
+    if version:
+        bindir = os.path.join(bindir, version)
 
     if shell is None:
         if sys.platform == 'win32':
@@ -394,12 +401,19 @@ def env(ctx, shell):
     if shell in ('sh', 'bash'):
         click.echo('export PATH="$PATH:%s"' % bindir)
         click.echo('# Run this command to configure your shell:')
-        click.echo('# eval "$(powershift client env --shell=%s)"' % shell)
+        if version:
+            click.echo('# eval "$(powershift client env %s --shell=%s)"' %
+                       (version, shell))
+        else:
+            click.echo('# eval "$(powershift client env --shell=%s)"' % shell)
 
     elif shell == 'powershell':
         click.echo('$Env:Path += ";%s"' % bindir)
         click.echo('# Run this command to configure your shell:')
-        click.echo('# powershift client env --shell=powershell | Invoke-Expression')
+        if version:
+            click.echo('# powershift client env %s --shell=powershell | Invoke-Expression' % version)
+        else:
+            click.echo('# powershift client env --shell=powershell | Invoke-Expression')
 
     elif shell == 'cmd':
         click.echo('set Path="%%Path%%;%s"' % bindir)
