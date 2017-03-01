@@ -404,7 +404,7 @@ def command_client_env(ctx, version, shell):
             shell = 'sh'
 
     if shell in ('sh', 'bash'):
-        click.echo('export PATH="$PATH:%s"' % bindir)
+        click.echo('export PATH="%s:$PATH"' % bindir)
         click.echo('# Run this command to configure your shell:')
         if version:
             click.echo('# eval "$(powershift client env %s --shell=%s)"' %
@@ -413,7 +413,7 @@ def command_client_env(ctx, version, shell):
             click.echo('# eval "$(powershift client env --shell=%s)"' % shell)
 
     elif shell == 'powershell':
-        click.echo('$Env:Path += ";%s"' % bindir)
+        click.echo('$Env:Path = "%s;" + $Env:Path' % bindir)
         click.echo('# Run this command to configure your shell:')
         if version:
             click.echo('# powershift client env %s --shell=powershell | Invoke-Expression' % version)
@@ -421,7 +421,7 @@ def command_client_env(ctx, version, shell):
             click.echo('# powershift client env --shell=powershell | Invoke-Expression')
 
     elif shell == 'cmd':
-        click.echo('set Path="%%Path%%;%s"' % bindir)
+        click.echo('set Path="%s;%%Path%%"' % bindir)
         click.echo('# Run this command to configure your shell: copy and paste the above values into your command prompt')
 
 def main():
