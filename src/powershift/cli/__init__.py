@@ -16,7 +16,7 @@ except ImportError:
 try:
     FileNotFoundError
 except NameError:
-    FileNotFoundError = IOError
+    FileNotFoundError = OSError
 
 import click
 
