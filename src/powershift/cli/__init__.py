@@ -13,6 +13,11 @@ try:
 except ImportError:
     from urllib.request import urlretrieve
 
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
+
 import click
 
 if sys.platform == 'win32':
