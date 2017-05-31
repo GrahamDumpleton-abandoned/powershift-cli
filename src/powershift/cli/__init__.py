@@ -241,10 +241,15 @@ client_downloads = {
         'linux' : 'openshift-origin-client-tools-v1.5.0-031cbe4-linux-64bit.tar.gz',
         'win32' : 'openshift-origin-client-tools-v1.5.0-031cbe4-windows.zip',
     },
-    'v3.6.0-alpha.0': {
-        'darwin' : 'openshift-origin-client-tools-v3.6.0-alpha.0-0343989-mac.zip',
-        'linux' : 'openshift-origin-client-tools-v3.6.0-alpha.0-0343989-linux-64bit.tar.gz',
-        'win32' : 'openshift-origin-client-tools-v3.6.0-alpha.0-0343989-windows.zip',
+    'v1.5.1': {
+        'darwin' : 'openshift-origin-client-tools-v1.5.1-7b451fc-mac.zip',
+        'linux' : 'openshift-origin-client-tools-v1.5.1-7b451fc-linux-64bit.tar.gz',
+        'win32' : 'openshift-origin-client-tools-v1.5.1-7b451fc-windows.zip',
+    },
+    'v3.6.0-alpha.1': {
+        'darwin' : 'openshift-origin-client-tools-v3.6.0-alpha.1-46942ad-mac.zip',
+        'linux' : 'openshift-origin-client-tools-v3.6.0-alpha.1-46942ad-linux-64bit.tar.gz',
+        'win32' : 'openshift-origin-client-tools-v3.6.0-alpha.1-46942ad-windows.zip',
     }
 }
 
@@ -263,7 +268,7 @@ def command_client_versions(ctx):
 @click.pass_context
 @click.option('--bindir', default=None,
     help='Specify directory to install oc binary.')
-@click.argument('version', default='v1.4.1')
+@click.argument('version', default='v1.5.1')
 def command_client_install(ctx, version, bindir):
     """
     Install version of oc command line tool.
