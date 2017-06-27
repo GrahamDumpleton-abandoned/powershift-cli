@@ -44,6 +44,24 @@ def server_url():
 
     return url
 
+def verify_oc_client_exists(ctx):
+    # Check whether the 'oc' command is installed and fail if not. We
+    # are so dependent on it being installed that there isn't much point
+    # continuing if it isn't.
+
+    try:
+        subprocess.check_output(['oc', 'help'], stderr=subprocess.STDOUT)
+
+    except FileNotFoundError:
+        click.echo('Failed: You do not appear to have the \'oc\' command '
+                'line tool installed. Please install it to continue.')
+        ctx.exit(1)
+
+    except subprocess.CalledProcessError:
+        click.echo('Failed: You appear to have the \'oc\' command '
+                'line tool installed, but it appears to be non functional.')
+        ctx.exit(1)
+
 @click.group()
 @click.pass_context
 def root(ctx):
@@ -62,44 +80,27 @@ def root(ctx):
 
     ctx.obj['ROOTDIR'] = ROOTDIR
 
-    # If running a command from client group, we want to skip checks for
-    # whether we have the 'oc' command as may be wanting to install it.
-
-    if ctx.invoked_subcommand == 'client':
-        return
-
-    # Check whether the 'oc' command is installed and fail if not. We
-    # are so dependent on it being installed that there isn't much point
-    # continuing if it isn't.
-
-    try:
-        subprocess.check_output(['oc', 'help'], stderr=subprocess.STDOUT)
-
-    except FileNotFoundError:
-        click.echo('Failed: You do not appear to have the \'oc\' command '
-                'line tool installed. Please install it to continue.')
-        ctx.exit(1)
-
-    except subprocess.CalledProcessError:
-        click.echo('Failed: You appear to have the \'oc\' command '
-                'line tool installed, but it appears to be non functional.')
-        ctx.exit(1)
-
 @root.command('console')
-def command_console():
+@click.pass_context
+def command_console(ctx):
     """
     Open a browser on the OpenShift web console.
 
     """
 
+    verify_oc_client_exists(ctx)
+
     webbrowser.open(server_url())
 
 @root.command('server')
-def command_server():
+@click.pass_context
+def command_server(ctx):
     """
     Displays the URL for the OpenShift cluster.
 
     """
+
+    verify_oc_client_exists(ctx)
 
     click.echo(server_url())
 
@@ -158,11 +159,14 @@ def session_user():
     return token
 
 @root.group('session')
-def group_session():
+@click.pass_context
+def group_session(ctx):
     """
     Display information about current session.
 
     """
+
+    verify_oc_client_exists(ctx)
 
 @group_session.command('user')
 @click.pass_context
