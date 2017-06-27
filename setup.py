@@ -33,8 +33,8 @@ setup_kwargs = dict(
     package_data={'powershift.cli': ['completion-bash.sh']},
     entry_points = {'console_scripts':['powershift = powershift.cli:main']},
     install_requires=['click'],
-    extras_require={'all':['powershift-cluster>=1.1.5'],
-                    'cluster':['powershift-cluster>=1.1.5']},
+    extras_require={'all':['powershift-cluster>=2.2.0'],
+                    'cluster':['powershift-cluster>=2.2.0']},
 )
 
 setup(**setup_kwargs)
