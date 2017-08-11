@@ -250,20 +250,10 @@ client_downloads = {
         'linux' : 'openshift-origin-client-tools-v1.5.1-7b451fc-linux-64bit.tar.gz',
         'win32' : 'openshift-origin-client-tools-v1.5.1-7b451fc-windows.zip',
     },
-    'v3.6.0-alpha.1': {
-        'darwin' : 'openshift-origin-client-tools-v3.6.0-alpha.1-46942ad-mac.zip',
-        'linux' : 'openshift-origin-client-tools-v3.6.0-alpha.1-46942ad-linux-64bit.tar.gz',
-        'win32' : 'openshift-origin-client-tools-v3.6.0-alpha.1-46942ad-windows.zip',
-    },
-    'v3.6.0-alpha.2': {
-        'darwin' : 'openshift-origin-client-tools-v3.6.0-alpha.2-3c221d5-mac.zip',
-        'linux' : 'openshift-origin-client-tools-v3.6.0-alpha.2-3c221d5-linux-64bit.tar.gz',
-        'win32' : 'openshift-origin-client-tools-v3.6.0-alpha.2-3c221d5-windows.zip',
-    },
-    'v3.6.0-rc.0': {
-        'darwin' : 'openshift-origin-client-tools-v3.6.0-rc.0-98b3d56-mac.zip',
-        'linux' : 'openshift-origin-client-tools-v3.6.0-rc.0-98b3d56-linux-64bit.tar.gz',
-        'win32' : 'openshift-origin-client-tools-v3.6.0-rc.0-98b3d56-windows.zip',
+    'v3.6.0': {
+        'darwin' : 'openshift-origin-client-tools-v3.6.0-c4dd4cf-mac.zip',
+        'linux' : 'openshift-origin-client-tools-v3.6.0-c4dd4cf-linux-64bit.tar.gz',
+        'win32' : 'openshift-origin-client-tools-v3.6.0-c4dd4cf-windows.zip',
     }
 }
 
@@ -282,7 +272,7 @@ def command_client_versions(ctx):
 @click.pass_context
 @click.option('--bindir', default=None,
     help='Specify directory to install oc binary.')
-@click.argument('version', default='v1.5.1')
+@click.argument('version', default='v3.6.0')
 def command_client_install(ctx, version, bindir):
     """
     Install version of oc command line tool.
