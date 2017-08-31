@@ -254,6 +254,11 @@ client_downloads = {
         'darwin' : 'openshift-origin-client-tools-v3.6.0-c4dd4cf-mac.zip',
         'linux' : 'openshift-origin-client-tools-v3.6.0-c4dd4cf-linux-64bit.tar.gz',
         'win32' : 'openshift-origin-client-tools-v3.6.0-c4dd4cf-windows.zip',
+    },
+    'v3.7.0-alpha.1': {
+        'darwin' : 'openshift-origin-client-tools-v3.7.0-alpha.1-fdbd3dc-mac.zip',
+        'linux' : 'openshift-origin-client-tools-v3.7.0-alpha.1-fdbd3dc-linux-64bit.tar.gz',
+        'win32' : 'openshift-origin-client-tools-v3.7.0-alpha.1-fdbd3dc-windows.zip',
     }
 }
 
