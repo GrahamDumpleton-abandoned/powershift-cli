@@ -12,4 +12,4 @@ release : clean package
 	twine upload dist/*
 
 clean :
-	rm -rf build dist powershift_cluster.egg-info
+	rm -rf build dist powershift_cli.egg-info
