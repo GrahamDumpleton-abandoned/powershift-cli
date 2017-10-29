@@ -282,7 +282,7 @@ def command_client_versions(ctx):
 @click.pass_context
 @click.option('--bindir', default=None,
     help='Specify directory to install oc binary.')
-@click.argument('version', default='v3.6.0')
+@click.argument('version', default='v3.6.1')
 def command_client_install(ctx, version, bindir):
     """
     Install version of oc command line tool.
