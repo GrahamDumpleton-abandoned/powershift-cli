@@ -19,7 +19,7 @@ classifiers = [
 
 setup_kwargs = dict(
     name='powershift-cli',
-    version='1.2.5',
+    version='1.2.6',
     description='Pluggable command line client for OpenShift.',
     long_description=long_description,
     url='https://github.com/getwarped/powershift-cli',
